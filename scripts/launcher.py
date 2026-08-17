@@ -32,10 +32,34 @@ def cmd_index():
     print(f"[index] {n} 条语料已入索引,backend={backend}", flush=True)
 
 
-def cmd_server():
+def cmd_server(host=None):
+    from app.config import get_app_config
+    cfg = get_app_config()
+    host = host or cfg.get("host") or "127.0.0.1"
+    port = int(cfg.get("port") or 8000)
+    if host == "0.0.0.0":
+        print(f"[server] 已绑定 0.0.0.0:局域网可访问 http://<本机IP>:{port}/ "
+              f"(对外需配 api_token)", flush=True)
+    else:
+        print(f"[server] 打开 http://127.0.0.1:{port}/ 开始问答", flush=True)
     import uvicorn
-    print("[server] 打开 http://127.0.0.1:8000/ 开始问答", flush=True)
-    uvicorn.run("app.main:app", host="127.0.0.1", port=8000)
+    uvicorn.run("app.main:app", host=host, port=port)
+
+
+def cmd_tunnel():
+    """cpolar 隧道:给飞书回调一个公网 URL。"""
+    from app.config import get_app_config
+    cfg = get_app_config()
+    port = int(cfg.get("port") or 8000)
+    cpolar = cfg.get("cpolar") or "cpolar"
+    print(f"[tunnel] 执行 {cpolar} http {port} ...", flush=True)
+    print("[tunnel] 启动后记下 Forwarding 里的 https://xxx.r1n.cn 地址,", flush=True)
+    print("[tunnel] 填到飞书后台「事件与回调 → 请求地址」: https://xxx/api/feishu/webhook",
+          flush=True)
+    try:
+        subprocess.run([cpolar, "http", str(port)], check=True)
+    except FileNotFoundError:
+        print("[tunnel] 找不到 cpolar,请先安装并登录(cpolar 官网)", flush=True)
 
 
 def cmd_deps():
@@ -79,15 +103,18 @@ MENU = [
     ("1) 解析语料(Excel → corpus/*.jsonl + 违禁词表)", cmd_ingest),
     ("2) 重建索引", cmd_index),
     ("3) 启动服务器(:8000)", cmd_server),
-    ("4) 安装依赖", cmd_deps),
-    ("5) 健康检查", cmd_check),
+    ("4) 启动 cpolar 隧道(飞书回调用)", cmd_tunnel),
+    ("5) 安装依赖", cmd_deps),
+    ("6) 健康检查", cmd_check),
 ]
 
 
 def main():
     args = sys.argv[1:]
     cmds = {"--ingest": cmd_ingest, "--index": cmd_index,
-            "--server": cmd_server, "--deps": cmd_deps, "--check": cmd_check}
+            "--server": cmd_server, "--tunnel": cmd_tunnel,
+            "--deps": cmd_deps, "--check": cmd_check,
+            "--lan": lambda: cmd_server("0.0.0.0")}
     for a in args:
         if a in cmds:
             cmds[a]()

@@ -1,0 +1,7 @@
+{
+  "app_id": "cli_xxxxxxxxxxxxxxxx",
+  "app_secret": "自建应用的 App Secret",
+  "verification_token": "应用后台的 Verification Token",
+  "encrypt_key": "",
+  "bot_name": "知识库客服"
+}
