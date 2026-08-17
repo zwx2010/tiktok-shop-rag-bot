@@ -7,11 +7,28 @@ def _sha1(*parts):
     return hashlib.sha1("".join(parts).encode("utf-8")).hexdigest()
 
 
+def _sha256(*parts):
+    return hashlib.sha256(b"".join(parts)).hexdigest()
+
+
 def verify_event_signature(timestamp, nonce, encrypt_key, signature):
-    """sha1(timestamp+nonce+encrypt_key)。"""
+    """旧版签名 v1: sha1(timestamp+nonce+encrypt_key)。"""
     if not signature:
         return False
     return _sha1(timestamp or "", nonce or "", encrypt_key or "") == signature
+
+
+def verify_event_signature_v2(timestamp, nonce, encrypt_key, signature, raw_body):
+    """新版签名 v2.0(飞书当前版本):
+    sha256( (timestamp+nonce+encrypt_key).encode('utf-8') + 原始请求体字节 )。
+    注意:是普通 sha256,不是 HMAC;encrypt_key 为空也要保留在拼接串里。
+    """
+    if not signature:
+        return False
+    if raw_body is None:
+        raw_body = b""
+    head = (timestamp or "") + (nonce or "") + (encrypt_key or "")
+    return _sha256(head.encode("utf-8"), raw_body) == signature
 
 
 def verify_token(body, verification_token):

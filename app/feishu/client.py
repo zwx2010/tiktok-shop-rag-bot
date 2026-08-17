@@ -9,6 +9,7 @@
 import json
 import threading
 import time
+import urllib.error
 import urllib.request
 
 from ..config import CONFIG_DIR
@@ -16,6 +17,7 @@ from ..io import read_json
 
 TOKEN_URL = "https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal"
 MSG_SEND_URL = "https://open.feishu.cn/open-apis/im/v1/messages"
+MSG_SEND_URL_CHAT = MSG_SEND_URL + "?receive_id_type=chat_id"
 
 _lock = threading.Lock()
 _token_cache = {}
@@ -64,10 +66,17 @@ def get_tenant_access_token():
 def send_message_app(token, chat_id, msg_type, content, timeout=15):
     """用应用身份发消息到群/单聊。content 为 dict(飞书按 msg_type 序列化)。"""
     try:
-        d = _post_json(MSG_SEND_URL,
+        d = _post_json(MSG_SEND_URL_CHAT,
                        {"receive_id": chat_id, "msg_type": msg_type,
                         "content": json.dumps(content, ensure_ascii=False)},
                        token=token, timeout=timeout)
+    except urllib.error.HTTPError as exc:
+        body = ""
+        try:
+            body = exc.read().decode("utf-8", "replace")
+        except Exception:
+            pass
+        return False, {"error": "HTTP %s: %s" % (exc.code, body[:300])}
     except Exception as exc:
         return False, {"error": str(exc)}
     return d.get("code") == 0, d

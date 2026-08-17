@@ -5,6 +5,16 @@
 或:
     python scripts/launcher.py --server
 """
+import sys
+
+# Windows 重定向 stdout/stderr 默认 GBK,emoji/中文可能编码失败,
+# 强制 UTF-8 保证飞书回消息的日志正常落盘。
+for _s in (sys.stdout, sys.stderr):
+    try:
+        _s.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
 from fastapi import FastAPI
 
 from .routers import api, feishu, pages
