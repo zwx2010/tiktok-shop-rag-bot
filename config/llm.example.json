@@ -1,0 +1,5 @@
+{
+  "endpoint": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+  "key": "sk-你的DashScope密钥",
+  "model": "qwen-plus"
+}

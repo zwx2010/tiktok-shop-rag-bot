@@ -1,0 +1,16 @@
+{
+  "app_name": "TikTok Shop 运营规则知识库问答",
+  "version": "0.1.0",
+  "host": "127.0.0.1",
+  "port": 8000,
+  "top_k": 5,
+  "min_score": 0.12,
+  "banned_keywords_file": "banned_keywords.json",
+  "examples": [
+    {"q": "变体值最多能填多少字符？"},
+    {"q": "标题能不能带品牌词？"},
+    {"q": "菲律宾佣金率是多少？"},
+    {"q": "泰国税费怎么算？"},
+    {"q": "这个品能不能上架？", "title": "不锈钢折叠刀户外"}
+  ]
+}

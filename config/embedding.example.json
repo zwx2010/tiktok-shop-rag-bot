@@ -1,0 +1,5 @@
+{
+  "endpoint": "https://dashscope.aliyuncs.com/compatible-mode/v1/embeddings",
+  "key": "sk-你的DashScope密钥",
+  "model": "text-embedding-v3"
+}

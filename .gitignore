@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# 本地密钥配置(不入库)
+config/*.local.json
+
+# 运行时数据
+data/
+
+# 日志
+*.log
+
+# 原始 Excel 语料源(本地私有,不入库)
+*.xlsx
+新建文件夹/
+
+# 个人 Claude Code 配置
+.claude/
+
+# 解析报告(可选)
+data/
