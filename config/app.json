@@ -4,7 +4,6 @@
   "host": "127.0.0.1",
   "port": 8000,
   "api_token": "",
-  "cpolar": "cpolar",
   "top_k": 5,
   "min_score": 0.12,
   "banned_keywords_file": "banned_keywords.json",

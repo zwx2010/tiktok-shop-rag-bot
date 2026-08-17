@@ -47,19 +47,8 @@ def cmd_server(host=None):
 
 
 def cmd_tunnel():
-    """cpolar 隧道:给飞书回调一个公网 URL。"""
-    from app.config import get_app_config
-    cfg = get_app_config()
-    port = int(cfg.get("port") or 8000)
-    cpolar = cfg.get("cpolar") or "cpolar"
-    print(f"[tunnel] 执行 {cpolar} http {port} ...", flush=True)
-    print("[tunnel] 启动后记下 Forwarding 里的 https://xxx.r1n.cn 地址,", flush=True)
-    print("[tunnel] 填到飞书后台「事件与回调 → 请求地址」: https://xxx/api/feishu/webhook",
-          flush=True)
-    try:
-        subprocess.run([cpolar, "http", str(port)], check=True)
-    except FileNotFoundError:
-        print("[tunnel] 找不到 cpolar,请先安装并登录(cpolar 官网)", flush=True)
+    """Cloudflare Quick Tunnel:起服务 + 隧道,直接打印飞书回调地址。"""
+    subprocess.run([sys.executable, str(BASE / "scripts" / "tunnel_up.py")], check=True)
 
 
 def cmd_deps():
@@ -103,7 +92,7 @@ MENU = [
     ("1) 解析语料(Excel → corpus/*.jsonl + 违禁词表)", cmd_ingest),
     ("2) 重建索引", cmd_index),
     ("3) 启动服务器(:8000)", cmd_server),
-    ("4) 启动 cpolar 隧道(飞书回调用)", cmd_tunnel),
+    ("4) 启动 Cloudflare 隧道(飞书回调用,自动打印地址)", cmd_tunnel),
     ("5) 安装依赖", cmd_deps),
     ("6) 健康检查", cmd_check),
 ]
